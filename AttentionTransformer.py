@@ -70,12 +70,12 @@ class AttentionTransformer(nn.Module):
 
         self.layer1 = self.output = nn.Linear(
             embed_dim,
-            len(vocab)
+            16
         )
 
         self.output = nn.Linear(
-            embed_dim,
-            len(vocab)
+            16,
+            1
         )
 
     def attention(self, x):
@@ -97,6 +97,7 @@ class AttentionTransformer(nn.Module):
             scores,
             dim=-1
         )
+
 
         return attention @ V
 
@@ -137,6 +138,7 @@ x_test = [torch.tensor([1, 8, 9])]
 y_test = [torch.tensor([8, 9, 7])]
 
 
+
 train_loss_values = []
 test_loss_values = []
 # =============================================
@@ -151,15 +153,17 @@ for epoch in range(epochs):
 
     model.train()
 
-    y_pred = model(x_train)
+    for i in range(len(x_train)):
 
-    loss = loss_fn(y_pred, y_train)
+        y_pred = model(x_train[i])
 
-    optimizer.zero_grad()
+        loss = loss_fn(y_pred, y_train[i])
 
-    loss.bacward()
+        optimizer.zero_grad()
 
-    optimizer.step()
+        loss.backward()
+
+        optimizer.step()
 
     # Evaluate Model
 
