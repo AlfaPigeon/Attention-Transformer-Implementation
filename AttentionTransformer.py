@@ -136,6 +136,9 @@ y_train = [
 x_test = [torch.tensor([1, 8, 9])]
 y_test = [torch.tensor([8, 9, 7])]
 
+
+train_loss_values = []
+test_loss_values = []
 # =============================================
 
 model = AttentionTransformer()
@@ -144,17 +147,30 @@ optimizer = torch.optim.Adam(params=model.parameters(), lr = 0.03)
 
 loss_fn = nn.L1Loss()
 
-
 for epoch in range(epochs):
 
     model.train()
 
-    pred = model.forward()
+    y_pred = model(x_train)
 
-    loss = loss_fn()
+    loss = loss_fn(y_pred, y_train)
+
+    optimizer.zero_grad()
 
     loss.bacward()
 
     optimizer.step()
 
-    optimizer.zero_grad()
+    # Evaluate Model
+
+    model.eval()
+
+    with torch.inference_mode():
+        test_pred = model(x_test)
+        test_loss = loss_fn(test_pred, y_test.type(torch.float)) # predictions come in torch.float datatype, so comparisons need to be done with tensors of the same type
+        train_loss_values.append(loss.detach().numpy())
+        test_loss_values.append(test_loss.detach().numpy())
+        print(f"Epoch: {epoch} | MAE Train Loss: {loss} | MAE Test Loss: {test_loss} ")
+
+
+    
