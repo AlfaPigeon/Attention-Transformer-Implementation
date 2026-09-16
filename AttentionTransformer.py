@@ -1,7 +1,7 @@
 # **Rules** (I promise i will follow them, we can have an online meeting you can ask anything related to this implementation)
-# No code generation, just code compilation
+# No code generation, just code compilation (Except graph and data stuff)
 # Only use ai for documentation
-# Do not copy code from external sources
+# Do not copy code from external sources (Except documentation examples)
 # Will not look at direct implementation of attention transformer
 # Arms and legs tied up, face on the floor
 # Will not use jupiter notebook it is wierd
@@ -23,7 +23,7 @@ from numpy.typing import NDArray
 
 # Paramerters
 embed_dim = 8
-epochs = 6
+epochs = 5
 
 torch.manual_seed(10)
 
@@ -166,7 +166,7 @@ for epoch in range(epochs):
         test_loss = 0
         for i in range(len(x_test)):
             test_pred = model(x_test[i])
-            test_loss += loss_fn(test_pred, y_test[i]) # predictions come in torch.float datatype, so comparisons need to be done with tensors of the same type
+            test_loss += loss_fn(test_pred, y_test[i])
         train_loss_values.append(loss.detach().numpy())
         test_loss_values.append(test_loss.detach().numpy())
         print(f"Epoch: {epoch} | Cross Entropy Train Loss: {loss} | Cross Entropy Test Loss: {test_loss} ")
@@ -179,6 +179,46 @@ Epoch: 1 | Cross Entropy Train Loss: 2.4573280811309814 | Cross Entropy Test Los
 Epoch: 2 | Cross Entropy Train Loss: 2.3892598152160645 | Cross Entropy Test Loss: 2.3977952003479004 
 Epoch: 3 | Cross Entropy Train Loss: 2.3094229698181152 | Cross Entropy Test Loss: 2.3692643642425537 
 Epoch: 4 | Cross Entropy Train Loss: 2.2170298099517822 | Cross Entropy Test Loss: 2.341926336288452 
-Epoch: 5 | Cross Entropy Train Loss: 2.1133031845092773 | Cross Entropy Test Loss: 2.318981647491455
-
 '''
+
+# Visual (I generated this code with ai)
+
+import matplotlib.pyplot as plt
+
+# =============================================
+# VISUALIZATION
+# =============================================
+
+# Create the plot
+plt.figure(figsize=(10, 6))
+
+# Plot the training and testing lines
+plt.plot(range(epochs), train_loss_values, label='Train Loss', color='blue', linewidth=2, marker='o')
+plt.plot(range(epochs), test_loss_values, label='Test Loss', color='red', linewidth=2, marker='x')
+
+# Add labels and styling
+plt.title('Transformer Loss Curve')
+plt.xlabel('Epochs')
+plt.ylabel('Cross Entropy Loss')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.7)
+
+# Show the graph!
+plt.show()
+
+
+# Test
+
+with torch.inference_mode():
+
+    i_am = torch.tensor(
+        [vocab["i"], vocab["am"]]
+    )
+
+    out = model(i_am)
+
+    out = out.tolist()
+
+    next_word_index = torch.argmax(torch.tensor(out[len(out)-1]))
+
+    print("i am ", [key for key, value in vocab.items() if value == next_word_index][0])
