@@ -94,9 +94,9 @@ class AttentionTransformer(nn.Module):
 
     def attention(self, x):
 
-        Q = self.W_Q(x)
-        K = self.W_K(x)
-        V = self.W_V(x)
+        Q = self.QW(x)
+        K = self.KW(x)
+        V = self.VW(x)
 
         scores = Q @ K.T
 
