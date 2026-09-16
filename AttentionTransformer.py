@@ -64,18 +64,18 @@ class AttentionTransformer(nn.Module):
             embedding_dim=embed_dim
         )
 
-        self.QW = nn.Linear(embed_dim, embed_dim, dtype=torch.float32)
-        self.KW = nn.Linear(embed_dim, embed_dim, dtype=torch.float32)
-        self.VW = nn.Linear(embed_dim, embed_dim, dtype=torch.float32)
+        self.QW = nn.Linear(embed_dim, embed_dim)
+        self.KW = nn.Linear(embed_dim, embed_dim)
+        self.VW = nn.Linear(embed_dim, embed_dim)
 
-        self.layer1 = self.output = nn.Linear(
+        self.layer1 = nn.Linear(
             embed_dim,
             16
         )
 
         self.output = nn.Linear(
             16,
-            1
+            len(vocab)
         )
 
     def attention(self, x):
@@ -147,7 +147,7 @@ model = AttentionTransformer()
 
 optimizer = torch.optim.Adam(params=model.parameters(), lr = 0.03)
 
-loss_fn = nn.L1Loss()
+loss_fn = nn.CrossEntropyLoss()
 
 for epoch in range(epochs):
 
@@ -170,8 +170,10 @@ for epoch in range(epochs):
     model.eval()
 
     with torch.inference_mode():
-        test_pred = model(x_test)
-        test_loss = loss_fn(test_pred, y_test.type(torch.float)) # predictions come in torch.float datatype, so comparisons need to be done with tensors of the same type
+        test_loss = 0
+        for i in range(len(x_test)):
+            test_pred = model(x_test[i])
+            test_loss += loss_fn(test_pred, y_test[i]) # predictions come in torch.float datatype, so comparisons need to be done with tensors of the same type
         train_loss_values.append(loss.detach().numpy())
         test_loss_values.append(test_loss.detach().numpy())
         print(f"Epoch: {epoch} | MAE Train Loss: {loss} | MAE Test Loss: {test_loss} ")
