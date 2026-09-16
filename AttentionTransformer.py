@@ -24,6 +24,7 @@ from numpy.typing import NDArray
 # Paramerters
 embed_dim = 8
 
+torch.seed(10)
 
 # Vocabulary
 vocab = {
@@ -62,29 +63,64 @@ vectors = embedding(x)
 
 print(vectors.shape)
 
-
 def ScaledDotProductAttention(Q: NDArray, K: NDArray, V: NDArray, d: float) -> NDArray:
     output = Q @ K.T
-    output = output/np.sqrt(d)
+    output = output/np.sqrt(d) # Attention Scores
     output = softmax(output)
     output = output @ V
 
     return output
     
-class AttentionTransformer(torch.nn):
+class AttentionTransformer(nn.Module):
 
     def __init__(self):
         super().__init__()
 
+        self.d_k = embed_dim
+
+        self.QW = nn.Linear(embed_dim, embed_dim, dtype=torch.float32)
+        self.KW = nn.Linear(embed_dim, embed_dim, dtype=torch.float32)
+        self.VW = nn.Linear(embed_dim, embed_dim, dtype=torch.float32)
+
+        self.layer1 = self.output = nn.Linear(
+            embed_dim,
+            len(vocab)
+        )
+
+        self.output = nn.Linear(
+            embed_dim,
+            len(vocab)
+        )
+
+    def attention(self, x):
+
+        Q = self.W_Q(x)
+        K = self.W_K(x)
+        V = self.W_V(x)
+
+        scores = Q @ K.T
+
+        scores = scores / torch.sqrt(
+            torch.tensor(
+                self.d_k,
+                dtype=Q.dtype
+            )
+        )
+
+        attention = torch.softmax(
+            scores,
+            dim=-1
+        )
+
+        return attention @ V
 
 
     def forward(self, x):
-        x = embedding(x)
-        x = self.attention(x)
-        x = nn.Linear()
-        x = nn.ReLU(x)
-        x = self.attention(x)
-        x = nn.Linear()
-        x = nn.ReLU(x)
-        x = embedding(x)
+
+        x = self.embedding(x)
+        x = self.attention(x) # Altered Embedding Vectors
+        x = self.layer1(x) # Single Linear Layer
+        x = torch.relu(x)
+        x = self.output(x)
+
         return x
