@@ -16,7 +16,14 @@
 #===========================================================================================================================
 
 import torch
-from torch import nn
+from torch import nn, softmax
+import numpy as np
+from numpy.typing import NDArray
+
+
+# Paramerters
+embed_dim = 8
+
 
 # Vocabulary
 vocab = {
@@ -48,9 +55,19 @@ print(token_ids)
 
 embedding = nn.Embedding(
     num_embeddings=len(vocab),
-    embedding_dim=8
+    embedding_dim=embed_dim
 )
 
 vectors = embedding(x)
 
 print(vectors.shape)
+
+
+def ScaledDotProductAttention(Q: NDArray, K: NDArray, V: NDArray, d: float) -> NDArray:
+    output = Q @ K.T
+    output = output/np.sqrt(d)
+    output = softmax(output)
+    output = output @ V
+
+    return output
+    
