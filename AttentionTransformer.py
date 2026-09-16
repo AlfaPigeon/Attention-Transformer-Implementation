@@ -73,6 +73,9 @@ class AttentionTransformer(nn.Module):
             len(vocab)
         )
 
+    def positional(self, x):
+        return 0
+
     def attention(self, x):
 
         Q = self.QW(x)
@@ -99,7 +102,9 @@ class AttentionTransformer(nn.Module):
 
     def forward(self, x):
 
-        x = self.embedding(x)
+        word_embeddings = self.embedding(x)
+        positional_embeddings = self.positional(x)
+        x = word_embeddings + positional_embeddings
         x = self.attention(x) # Altered Embedding Vectors
         x = self.output(x)
 
