@@ -24,7 +24,7 @@ from numpy.typing import NDArray
 # Paramerters
 embed_dim = 8
 
-torch.seed(10)
+torch.manual_seed(10)
 
 # Vocabulary
 vocab = {
