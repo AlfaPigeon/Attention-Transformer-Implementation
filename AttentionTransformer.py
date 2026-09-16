@@ -71,3 +71,20 @@ def ScaledDotProductAttention(Q: NDArray, K: NDArray, V: NDArray, d: float) -> N
 
     return output
     
+class AttentionTransformer(torch.nn):
+
+    def __init__(self):
+        super().__init__()
+
+
+
+    def forward(self, x):
+        x = embedding(x)
+        x = self.attention(x)
+        x = nn.Linear()
+        x = nn.ReLU(x)
+        x = self.attention(x)
+        x = nn.Linear()
+        x = nn.ReLU(x)
+        x = embedding(x)
+        return x
