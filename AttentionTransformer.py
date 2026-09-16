@@ -23,6 +23,7 @@ from numpy.typing import NDArray
 
 # Paramerters
 embed_dim = 8
+epochs = 10
 
 torch.manual_seed(10)
 
@@ -43,26 +44,6 @@ vocab = {
     "a":12
 }
 
-sentence = "i have a lot of testosterone"
-
-# Tokenization
-tokens = sentence.lower().split()
-
-token_ids = [vocab[token] for token in tokens]
-
-x = torch.tensor(token_ids)
-
-print(token_ids)
-
-embedding = nn.Embedding(
-    num_embeddings=len(vocab),
-    embedding_dim=embed_dim
-)
-
-vectors = embedding(x)
-
-print(vectors.shape)
-
 def ScaledDotProductAttention(Q: NDArray, K: NDArray, V: NDArray, d: float) -> NDArray:
     output = Q @ K.T
     output = output/np.sqrt(d) # Attention Scores
@@ -77,6 +58,11 @@ class AttentionTransformer(nn.Module):
         super().__init__()
 
         self.d_k = embed_dim
+
+        self.embedding  = nn.Embedding(
+            num_embeddings=len(vocab),
+            embedding_dim=embed_dim
+        )
 
         self.QW = nn.Linear(embed_dim, embed_dim, dtype=torch.float32)
         self.KW = nn.Linear(embed_dim, embed_dim, dtype=torch.float32)
@@ -124,3 +110,51 @@ class AttentionTransformer(nn.Module):
         x = self.output(x)
 
         return x
+
+
+# TRAINING DATA (I generated this with ai) ===
+# Sentences: 
+# 1. "i am very cool"
+# 2. "i have a lot of testosterone"
+# 3. "i am masculine and superior"
+
+x_train = [
+    torch.tensor([1, 2, 3]),
+    torch.tensor([1, 8, 12, 10, 11]),
+    torch.tensor([1, 2, 6, 5])
+]
+
+y_train = [
+    torch.tensor([2, 3, 4]),
+    torch.tensor([8, 12, 10, 11, 7]),
+    torch.tensor([2, 6, 5, 9])
+]
+
+# TEST DATA
+# Sentence: "i have superior testosterone"
+
+x_test = [torch.tensor([1, 8, 9])]
+y_test = [torch.tensor([8, 9, 7])]
+
+# =============================================
+
+model = AttentionTransformer()
+
+optimizer = torch.optim.Adam(params=model.parameters(), lr = 0.03)
+
+loss_fn = nn.L1Loss()
+
+
+for epoch in range(epochs):
+
+    model.train()
+
+    pred = model.forward()
+
+    loss = loss_fn()
+
+    loss.bacward()
+
+    optimizer.step()
+
+    optimizer.zero_grad()
