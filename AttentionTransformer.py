@@ -23,7 +23,7 @@ from numpy.typing import NDArray
 
 # Paramerters
 embed_dim = 8
-epochs = 10
+epochs = 6
 
 torch.manual_seed(10)
 
@@ -68,13 +68,8 @@ class AttentionTransformer(nn.Module):
         self.KW = nn.Linear(embed_dim, embed_dim)
         self.VW = nn.Linear(embed_dim, embed_dim)
 
-        self.layer1 = nn.Linear(
-            embed_dim,
-            16
-        )
-
         self.output = nn.Linear(
-            16,
+            embed_dim,
             len(vocab)
         )
 
@@ -106,8 +101,6 @@ class AttentionTransformer(nn.Module):
 
         x = self.embedding(x)
         x = self.attention(x) # Altered Embedding Vectors
-        x = self.layer1(x) # Single Linear Layer
-        x = torch.relu(x)
         x = self.output(x)
 
         return x
@@ -145,7 +138,7 @@ test_loss_values = []
 
 model = AttentionTransformer()
 
-optimizer = torch.optim.Adam(params=model.parameters(), lr = 0.03)
+optimizer = torch.optim.Adam(params=model.parameters(), lr = 0.01)
 
 loss_fn = nn.CrossEntropyLoss()
 
@@ -176,7 +169,16 @@ for epoch in range(epochs):
             test_loss += loss_fn(test_pred, y_test[i]) # predictions come in torch.float datatype, so comparisons need to be done with tensors of the same type
         train_loss_values.append(loss.detach().numpy())
         test_loss_values.append(test_loss.detach().numpy())
-        print(f"Epoch: {epoch} | MAE Train Loss: {loss} | MAE Test Loss: {test_loss} ")
+        print(f"Epoch: {epoch} | Cross Entropy Train Loss: {loss} | Cross Entropy Test Loss: {test_loss} ")
 
 
     
+'''
+Epoch: 0 | Cross Entropy Train Loss: 2.513230323791504 | Cross Entropy Test Loss: 2.448920249938965 
+Epoch: 1 | Cross Entropy Train Loss: 2.4573280811309814 | Cross Entropy Test Loss: 2.425050973892212 
+Epoch: 2 | Cross Entropy Train Loss: 2.3892598152160645 | Cross Entropy Test Loss: 2.3977952003479004 
+Epoch: 3 | Cross Entropy Train Loss: 2.3094229698181152 | Cross Entropy Test Loss: 2.3692643642425537 
+Epoch: 4 | Cross Entropy Train Loss: 2.2170298099517822 | Cross Entropy Test Loss: 2.341926336288452 
+Epoch: 5 | Cross Entropy Train Loss: 2.1133031845092773 | Cross Entropy Test Loss: 2.318981647491455
+
+'''
