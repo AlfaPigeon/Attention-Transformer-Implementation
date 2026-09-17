@@ -11,14 +11,14 @@ from utils import test_model, visualize_loss
 # Paramerters ==========
 embed_dim = 8
 epochs = 10
-
+num_heads = 4
 torch.manual_seed(238972198372)
 # ======================
 
 train_loss_values = []
 test_loss_values = []
 
-model = AttentionTransformer(embed_dim=embed_dim, vocab=vocab)
+model = AttentionTransformer(num_heads=num_heads, embed_dim=embed_dim, vocab=vocab)
 
 optimizer = torch.optim.Adam(params=model.parameters(), lr = 0.01)
 
