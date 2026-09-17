@@ -31,6 +31,8 @@ class AttentionTransformer(nn.Module):
             for _ in range(self.num_heads)
         ])
 
+        self.norm = nn.LayerNorm(self.embed_dim)
+
         self.output = nn.Linear(
             self.embed_dim,
             len(self.vocab)
@@ -94,7 +96,8 @@ class AttentionTransformer(nn.Module):
         word_embeddings = self.embedding(x)
         positional_embeddings = self.positional(x)
         x = word_embeddings + positional_embeddings
-        x = self.attention(x)
+        x = x + self.attention(x)
+        x = self.norm(x)
         x = self.output(x)
 
         return x
