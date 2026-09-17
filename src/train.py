@@ -10,7 +10,7 @@ from utils import test_model, visualize_loss
 
 # Paramerters ==========
 embed_dim = 8
-epochs = 10
+epochs = 9
 num_heads = 4
 torch.manual_seed(238972198372)
 # ======================

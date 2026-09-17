@@ -6,7 +6,7 @@ class AttentionTransformer(nn.Module):
     def __init__(self, num_heads, embed_dim, vocab):
         super().__init__()
 
-        self.d_k = embed_dim 
+        self.d_k = embed_dim // num_heads
         self.num_heads = num_heads
         self.embed_dim = embed_dim
         self.vocab = vocab
@@ -17,25 +17,19 @@ class AttentionTransformer(nn.Module):
         )
 
         self.attention_heads_Q = nn.ModuleList([
-            nn.Linear(self.embed_dim, self.embed_dim)
+            nn.Linear(self.embed_dim, self.d_k)
             for _ in range(self.num_heads)
         ])
 
         self.attention_heads_K = nn.ModuleList([
-            nn.Linear(self.embed_dim, self.embed_dim)
+            nn.Linear(self.embed_dim, self.d_k)
             for _ in range(self.num_heads)
         ])
 
         self.attention_heads_V = nn.ModuleList([
-            nn.Linear(self.embed_dim, self.embed_dim)
+            nn.Linear(self.embed_dim, self.d_k)
             for _ in range(self.num_heads)
         ])
-
-        '''Single-head attention weights
-        self.QW = nn.Linear(self.embed_dim, self.embed_dim)
-        self.KW = nn.Linear(self.embed_dim, self.embed_dim)
-        self.VW = nn.Linear(self.embed_dim, self.embed_dim)
-        '''
 
         self.output = nn.Linear(
             self.embed_dim,
@@ -100,7 +94,7 @@ class AttentionTransformer(nn.Module):
         word_embeddings = self.embedding(x)
         positional_embeddings = self.positional(x)
         x = word_embeddings + positional_embeddings
-        x = self.attention(x) # Altered Embedding Vectors
+        x = self.attention(x)
         x = self.output(x)
 
         return x
